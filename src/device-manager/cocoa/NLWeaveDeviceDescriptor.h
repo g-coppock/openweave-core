@@ -26,31 +26,40 @@
 
 #import "NLWeaveDeviceManagerTypes.h"
 
+typedef enum NLWeaveDeviceDescriptorFlags {
+    kNLWeaveDeviceDescriptorFlag_IsRendezvousWiFiESSIDSuffix = 0x01,    // Indicates that the RendezvousWiFiESSID value is a suffix string that
+                                                                        //    appears at the end of the ESSID of the device's WiFi rendezvous network.
+} NLWeaveDeviceDescriptorFlags;
+
 
 @interface NLWeaveDeviceDescriptor : NSObject<NSCopying, NSCoding>
 
 + (instancetype)decodeDeviceDescriptor:(NSString *)descriptorStr;
 
-@property (nonatomic, strong) NSNumber *DeviceId;                           	// Weave device id (0 = not present)
-@property (nonatomic, strong) NSNumber *FabricId;                           	// Id of Weave fabric to which the device belongs (0 = not present)
-@property (nonatomic) NSInteger DeviceFeatures;							// Indicates support for specific device features.
-@property (nonatomic) NSUInteger VendorId;                         		// Device vendor code (0 = not present)
-@property (nonatomic) NSInteger ProductId;                        		// Device product code (0 = not present)
-@property (nonatomic) NSUInteger ProductRevision;                  		// Device product revision (0 = not present)
+@property (nonatomic, strong) NSNumber *DeviceId;                       // Weave device id (0 = not present)
+@property (nonatomic, strong) NSNumber *FabricId;                       // Id of Weave fabric to which the device belongs (0 = not present)
+@property (nonatomic) NSInteger DeviceFeatures;	                        // Indicates support for specific device features.
+@property (nonatomic) NSUInteger VendorId;                              // Device vendor code (0 = not present)
+@property (nonatomic) NSInteger ProductId;                              // Device product code (0 = not present)
+@property (nonatomic) NSUInteger ProductRevision;                       // Device product revision (0 = not present)
 
 @property (nonatomic) NLManufacturingDate ManufacturingDate;
 
-@property (nonatomic, strong) NSData *Primary802154MACAddress;      	// MAC address for primary 802.15.4 interface (big-endian, all zeros = not present)
-@property (nonatomic, strong) NSData *PrimaryWiFiMACAddress;        	// MAC address for primary WiFi interface (big-endian, all zeros = not present)
+@property (nonatomic, strong) NSData *Primary802154MACAddress;          // MAC address for primary 802.15.4 interface (big-endian, all zeros = not present)
+@property (nonatomic, strong) NSData *PrimaryWiFiMACAddress;            // MAC address for primary WiFi interface (big-endian, all zeros = not present)
 
-@property (nonatomic, copy) NSString *SerialNumber;               	// Device serial number (nul terminated, 0 length = not present)
-@property (nonatomic, copy) NSString *SoftwareVersion;            	// Active software version (nul terminated, 0 length = not present)
-@property (nonatomic, copy) NSString *RendezvousWiFiESSID;        	// ESSID for pairing WiFi network (nul terminated, 0 length = not present)
-@property (nonatomic, copy) NSString *PairingCode;                	// Device pairing code (nul terminated, 0 length = not present)
+@property (nonatomic, copy) NSString *SerialNumber;                     // Device serial number (nul terminated, 0 length = not present)
+@property (nonatomic, copy) NSString *SoftwareVersion;                  // Active software version (nul terminated, 0 length = not present)
+@property (nonatomic, copy) NSString *RendezvousWiFiESSID;              // ESSID or ESSID suffix for pairing WiFi network (nul terminated, 0 length = not present)
+@property (nonatomic, copy) NSString *PairingCode;                      // Device pairing code (nul terminated, 0 length = not present)
 
-@property (nonatomic) NSUInteger PairingCompatibilityVersionMajor;		// Major device pairing software compatibility version
-@property (nonatomic) NSUInteger PairingCompatibilityVersionMinor;		// Minor device pairing software compatibility version
+@property (nonatomic) NSUInteger PairingCompatibilityVersionMajor;      // Major device pairing software compatibility version
+@property (nonatomic) NSUInteger PairingCompatibilityVersionMinor;      // Minor device pairing software compatibility version
 
-- (BOOL)requiresLinePower;												// Indicates a device that requires line power.
+@property (nonatomic) NSUInteger Flags;                                 // Bit field containing additional information about the device.
+
+- (BOOL)requiresLinePower;                                              // Indicates a device that requires line power.
+- (BOOL)isRendezvousWiFiESSIDSuffix;                                    // Indicates that the RendezvousWiFiESSID value is a suffix string that
+                                                                        //   appears at the end of the ESSID of the device's WiFi rendezvous network.
 
 @end

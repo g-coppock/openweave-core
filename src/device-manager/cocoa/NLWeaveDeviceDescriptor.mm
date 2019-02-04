@@ -110,6 +110,8 @@ exit:
 
         _PairingCompatibilityVersionMajor = deviceDescriptor.PairingCompatibilityVersionMajor;
         _PairingCompatibilityVersionMinor = deviceDescriptor.PairingCompatibilityVersionMinor;
+        
+        _Flags = deviceDescriptor.Flags;
     }
     return self;
 }
@@ -124,6 +126,18 @@ exit:
     {
         return NO;
     }
+}
+
+-(BOOL)isRendezvousWiFiESSIDSuffix
+{
+	if ((_Flags & kNLWeaveDeviceDescriptorFlag_IsRendezvousWiFiESSIDSuffix) == kNLWeaveDeviceDescriptorFlag_IsRendezvousWiFiESSIDSuffix)
+	{
+		return YES;
+	}
+	else
+	{
+		return NO;
+	}
 }
 
 #pragma mark - NSCoding, NSCopying
@@ -153,6 +167,8 @@ exit:
 
         _PairingCompatibilityVersionMajor = [decoder decodeIntegerForKey:NSStringFromSelector(@selector(PairingCompatibilityVersionMajor))];
         _PairingCompatibilityVersionMinor = [decoder decodeIntegerForKey:NSStringFromSelector(@selector(PairingCompatibilityVersionMinor))];
+        
+        _Flags = [decoder decodeIntegerForKey:NSStringFromSelector(@selector(Flags))];
     }
 
     return self;
@@ -181,6 +197,8 @@ exit:
 
     [coder encodeInteger:self.PairingCompatibilityVersionMajor forKey:NSStringFromSelector(@selector(PairingCompatibilityVersionMajor))];
     [coder encodeInteger:self.PairingCompatibilityVersionMinor forKey:NSStringFromSelector(@selector(PairingCompatibilityVersionMinor))];
+
+    [coder encodeInteger:self.Flags forKey:NSStringFromSelector(@selector(Flags))];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -204,6 +222,8 @@ exit:
 
     copy.PairingCompatibilityVersionMajor = self.PairingCompatibilityVersionMajor;
     copy.PairingCompatibilityVersionMinor = self.PairingCompatibilityVersionMinor;
+    
+    copy.Flags = self.Flags;
 
     return copy;
 }
@@ -251,12 +271,13 @@ exit:
     BOOL equalPairingCompatibilityVersionMajor = self.PairingCompatibilityVersionMajor == descriptor.PairingCompatibilityVersionMajor;
     BOOL equalPairingCompatibilityVersionMinor = self.PairingCompatibilityVersionMinor == descriptor.PairingCompatibilityVersionMinor;
 
+    BOOL equalFlags = self.Flags == descriptor.Flags;
 
     return equalDeviceId && equalFabricId &&
             equalDeviceFeatures && equalVendorId && equalProductId && equalProductRevision &&
             equalManufacturingDate && equalPrimary802154MACAddress && equalPrimaryWiFiMACAddress &&
             equalSerialNumber && equalSoftwareVersion && equalRendezvousWiFiESSID && equalPairingCode &&
-            equalPairingCompatibilityVersionMajor && equalPairingCompatibilityVersionMinor;
+            equalPairingCompatibilityVersionMajor && equalPairingCompatibilityVersionMinor && equalFlags;
 }
 
 #pragma mark - Protected methods
@@ -272,6 +293,7 @@ exit:
 - (NSString *)debugDescriptionWithDeviceDescriptor:(nl::Weave::Profiles::DeviceDescription::WeaveDeviceDescriptor *)pDeviceDescriptor
 {
     BOOL linePowered = (pDeviceDescriptor->DeviceFeatures & WeaveDeviceDescriptor::kFeature_LinePowered) == WeaveDeviceDescriptor::kFeature_LinePowered;
+    BOOL isRendezvousWiFiESSIDSuffix = (pDeviceDescriptor->Flags & WeaveDeviceDescriptor::kFlag_IsRendezvousWiFiESSIDSuffix) == WeaveDeviceDescriptor::kFlag_IsRendezvousWiFiESSIDSuffix;
 
     NSUInteger lenV6 = sizeof(pDeviceDescriptor->Primary802154MACAddress) / sizeof(pDeviceDescriptor->Primary802154MACAddress[0]);
     NSUInteger lenV4 = sizeof(pDeviceDescriptor->PrimaryWiFiMACAddress) / sizeof(pDeviceDescriptor->PrimaryWiFiMACAddress[0]);
@@ -291,7 +313,8 @@ exit:
                                                          "\tPairingCode: %s\n"
                                                          "\tPairingCompatibilityVersionMajor: %d\n"
                                                          "\tPairingCompatibilityVersionMinor: %d\n"
-                                                         "\tRequires Line Power: %d\n",
+                                                         "\tRequires Line Power: %d\n"
+                                                         "\tIsRendezvousWiFiESSIDSuffix: %d\n",
                                                  self,
                                                  pDeviceDescriptor->DeviceId,
                                                  pDeviceDescriptor->FabricId,
@@ -310,7 +333,8 @@ exit:
                                                  pDeviceDescriptor->PairingCode,
                                                  pDeviceDescriptor->PairingCompatibilityVersionMajor,
                                                  pDeviceDescriptor->PairingCompatibilityVersionMinor,
-                                                 linePowered];
+                                                 linePowered,
+                                                 isRendezvousWiFiESSIDSuffix];
 
     return descr;
 }
@@ -333,7 +357,8 @@ exit:
                                                          "\tPairingCode: %@\n"
                                                          "\tPairingCompatibilityVersionMajor: %ld\n"
                                                          "\tPairingCompatibilityVersionMinor: %ld\n"
-                                                         "\tRequires Line Power: %d\n",
+                                                         "\tRequires Line Power: %d\n"
+                                                         "\tIsRendezvousWiFiESSIDSuffix: %d\n",
 
                                                  self,
                                                  [_DeviceId longLongValue],
@@ -353,7 +378,8 @@ exit:
                                                  _PairingCode,
                                                  (long)_PairingCompatibilityVersionMajor,
                                                  (long)_PairingCompatibilityVersionMinor,
-                                                 [self requiresLinePower]];
+                                                 [self requiresLinePower],
+                                                 [self isRendezvousWiFiESSIDSuffix]];
     return descr;
 }
 
