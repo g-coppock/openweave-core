@@ -3113,7 +3113,7 @@ WEAVE_ERROR N2J_NetworkInfo(JNIEnv *env, const NetworkInfo& inNetworkInfo, jobje
         SuccessOrExit(err);
     }
 
-    makeMethod = env->GetStaticMethodID(sNetworkInfoCls, "Make", "(IJLjava/lang/String;III[BLjava/lang/String;[B[BS)Lnl/Weave/DeviceManager/NetworkInfo;");
+    makeMethod = env->GetStaticMethodID(sNetworkInfoCls, "Make", "(IJLjava/lang/String;III[BLjava/lang/String;[B[BSIB)Lnl/Weave/DeviceManager/NetworkInfo;");
     VerifyOrExit(makeMethod != NULL, err = WDM_JNI_ERROR_METHOD_NOT_FOUND);
 
     env->ExceptionClear();
